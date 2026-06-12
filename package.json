@@ -1,0 +1,23 @@
+{
+  "name": "lutron",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "predev": "npm run build -w @lutron/shared",
+    "dev": "concurrently -n api,web -c blue,magenta \"npm run dev -w @lutron/api\" \"npm run dev -w @lutron/web\"",
+    "dev:api": "npm run dev -w @lutron/api",
+    "dev:web": "npm run dev -w @lutron/web",
+    "build": "npm run build -w @lutron/shared && npm run build -w @lutron/api && npm run build -w @lutron/web",
+    "db:generate": "npm run db:generate -w @lutron/api",
+    "db:migrate": "npm run db:migrate -w @lutron/api",
+    "db:seed": "npm run build -w @lutron/shared && npm run db:seed -w @lutron/api",
+    "db:studio": "npm run db:studio -w @lutron/api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

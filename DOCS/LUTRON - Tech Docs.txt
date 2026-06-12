@@ -1,0 +1,381 @@
+﻿DOCUMENT TECHNIQUE LUTRON V1
+1. Objectif Général
+LUTRON est une plateforme centralisée de supervision, administration et gestion technique basée sur une architecture modulaire.
+Le système doit permettre de superviser plusieurs types d'infrastructures :
+* Applications Web
+* APIs
+* Machines physiques
+* Machines virtuelles
+* Services réseau
+* Systèmes de jeux
+* Outils internes
+* Services tiers
+Le Service constitue l'entité centrale de toute la plateforme.
+Toutes les ressources, permissions, modules, historiques et données sont rattachés à un Service.
+________________
+
+
+2. Architecture Générale
+Architecture logique
+┌─────────────────────────────┐
+│         Frontend            │
+│         React TS            │
+└─────────────┬───────────────┘
+             │
+             ▼
+┌─────────────────────────────┐
+│         API Gateway         │
+│          NestJS             │
+└─────────────┬───────────────┘
+             │
+┌────────────┼────────────┐
+▼            ▼            ▼
+
+
+Core      Modules      Monitoring
+
+
+▼            ▼            ▼
+
+
+PostgreSQL  Redis   Worker Cluster
+________________
+
+
+3. Interface Utilisateur
+L'interface doit reprendre un fonctionnement similaire à la maquette fournie.
+Structure globale
+┌─────────────────────────────────────────┐
+│ HEADER                                  │
+├───────┬─────────────────────────────────┤
+│       │                                 │
+│ SIDEBAR                                │
+│       │                                 │
+│       │         CONTENT VIEW            │
+│       │                                 │
+│       │                                 │
+└───────┴─────────────────────────────────┘
+________________
+
+
+4. Sidebar
+La Sidebar est fixe.
+Largeur recommandée :
+280px
+Zone utilisateur
+Toujours présente en haut.
+Affiche :
+Avatar
+Nom
+Rôle Global
+Exemple :
+┌─────────────────────┐
+│ [IMG] Luc           │
+│ Platform Owner      │
+└─────────────────────┘
+________________
+
+
+Navigation
+Organisation :
+Catégorie
+├─ Vue
+├─ Vue
+├─ Vue
+Exemple :
+Services
+├─ Liste
+├─ Création
+
+
+Monitoring
+├─ Vue Globale
+├─ Alertes
+├─ Maintenances
+
+
+Administration
+├─ Utilisateurs
+├─ Permissions
+├─ Modules
+Les vues affichées dépendent des permissions utilisateur.
+________________
+
+
+5. Zone Contenu
+Chaque vue est chargée dynamiquement.
+La sidebar ne se recharge jamais.
+Le contenu doit être rendu par React Router.
+Architecture :
+Layout
+├─ Sidebar
+├─ Header
+└─ Outlet
+________________
+
+
+6. Gestion des Services
+Structure
+Service
+Champs Core :
+id
+technical_id
+name
+description
+tags
+created_at
+updated_at
+Les tags sont utilisés pour catégoriser les services.
+Exemples :
+WEB_APP
+API
+MACHINE
+LOW_SYS
+GAME_SYSTEM
+________________
+
+
+7. RBAC
+Basé sur les spécifications fonctionnelles.
+Permissions
+permission_id
+name
+module
+description
+Exemple :
+MONITORING_VIEW
+MONITORING_EDIT
+SERVICE_ADMIN
+Les permissions sont définies uniquement dans le code.
+________________
+
+
+Rôles
+role_id
+service_id
+name
+Association :
+role_permissions
+________________
+
+
+Attribution
+service_users
+user_id
+service_id
+role_id
+Les rôles sont évalués par service.
+________________
+
+
+8. Système Modulaire
+Le Core ne connaît aucun module métier.
+Chaque module fournit :
+Manifest
+Permissions
+Routes API
+Pages Front
+Migration SQL
+Services
+Manifest :
+{
+ "id": "monitoring",
+ "name": "Monitoring",
+ "version": "1.0.0"
+}
+________________
+
+
+9. Monitoring Engine
+Service séparé du Core.
+Architecture :
+Monitoring Scheduler
+       │
+       ▼
+Queue Redis
+       │
+       ▼
+Workers
+Chaque vérification est exécutée indépendamment.
+Types :
+* HTTP
+* HTTPS
+* Ping
+* SSH
+* Local Command
+* Remote Command
+________________
+
+
+10. Base Monitoring
+Resource
+resource_id
+service_id
+name
+description
+Exemple :
+Site Principal
+________________
+
+
+Check
+check_id
+resource_id
+type
+config
+interval
+timeout
+Exemple :
+HTTPS
+SSL
+API
+DATABASE
+________________
+
+
+11. Calcul d'État
+Les états sont configurables par service.
+Table :
+service_states
+Exemple :
+UP
+WARNING
+DOWN
+MAINTENANCE
+UNKNOWN
+Le calcul doit être pondéré :
+DOWN > WARNING > UP
+Si un check est DOWN :
+Resource = DOWN
+________________
+
+
+12. Alertes
+Canaux supportés :
+* Discord
+* Telegram
+Architecture :
+Event
+ ↓
+Alert Engine
+ ↓
+Channel Dispatcher
+ ├─ Discord
+ └─ Telegram
+Les canaux sont mutualisés entre services.
+________________
+
+
+13. Maintenances
+Structure :
+maintenance_id
+service_id
+start_at
+end_at
+reason
+Pendant une maintenance :
+* collecte active
+* monitoring actif
+* alertes suspendues
+________________
+
+
+14. Gestion Documentaire
+Module Core obligatoire.
+Structure :
+document_id
+service_id
+title
+content
+created_by
+Fonctions :
+* Historique
+* Révisions
+* Recherche
+* Permissions RBAC
+________________
+
+
+15. Temps Réel
+Toutes les mises à jour critiques passent par WebSocket.
+Événements :
+CHECK_UPDATE
+ALERT_CREATED
+ALERT_RESOLVED
+SERVICE_UPDATED
+USER_UPDATED
+Le frontend ne doit jamais recharger la page.
+________________
+
+
+16. API
+REST API principale.
+Préfixe :
+/api/v1
+Exemples :
+GET    /services
+GET    /services/:id
+
+
+GET    /monitoring/resources
+
+
+POST   /alerts
+
+
+GET    /documents
+Authentification :
+JWT
+Les permissions API doivent être identiques à celles de l'interface.
+________________
+
+
+17. Base de données
+Je recommande PostgreSQL.
+Tables principales :
+users
+services
+
+
+roles
+permissions
+role_permissions
+
+
+service_users
+
+
+modules
+
+
+resources
+checks
+check_results
+
+
+alerts
+
+
+maintenances
+
+
+documents
+
+
+channels
+________________
+
+
+18. Évolutions Futures
+L'architecture doit permettre l'ajout futur de modules tels que :
+* Ticketing
+* Inventaire matériel
+* Gestion de parc
+* Gestion de déploiement
+* Gestion de logs
+* Gestion CI/CD
+* Gestion des incidents
+* Gestion des certificats SSL
+* Gestion Kubernetes
+* Gestion Roblox/Game Server
+sans modification du Core.

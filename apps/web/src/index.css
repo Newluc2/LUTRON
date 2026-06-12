@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+@theme {
+  --color-lutron-bg: #0a0a0b;
+  --color-lutron-surface: #111113;
+  --color-lutron-card: #18181b;
+  --color-lutron-card-hover: #1f1f23;
+  --color-lutron-border: #27272a;
+  --color-lutron-muted: #71717a;
+  --color-lutron-text: #fafafa;
+  --color-lutron-accent: #8b5cf6;
+  --color-lutron-accent-dim: #6d28d9;
+  --color-lutron-success: #22c55e;
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--color-lutron-bg);
+  color: var(--color-lutron-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.react-grid-layout {
+  position: relative;
+}
+
+.react-grid-item {
+  position: absolute !important;
+  transition: all 200ms ease;
+  transition-property: left, top;
+}
+
+.react-grid-item.cssTransforms {
+  transition-property: transform !important;
+}
+
+.react-grid-item.resizing {
+  z-index: 10 !important;
+  will-change: width, height;
+}
+
+.react-grid-item.react-draggable-dragging {
+  transition: none !important;
+  z-index: 20 !important;
+  will-change: transform;
+}
+
+.react-resizable-handle {
+  position: absolute !important;
+  width: 20px !important;
+  height: 20px !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  cursor: se-resize !important;
+  z-index: 10 !important;
+}
+
+.react-resizable-handle::after {
+  content: "" !important;
+  position: absolute !important;
+  right: 4px !important;
+  bottom: 4px !important;
+  width: 8px !important;
+  height: 8px !important;
+  border-right: 2px solid #52525b !important;
+  border-bottom: 2px solid #52525b !important;
+}
+
+.react-grid-item.react-grid-placeholder {
+  background: rgba(139, 92, 246, 0.15) !important;
+  border-radius: 16px !important;
+  border: 2px dashed rgba(139, 92, 246, 0.3) !important;
+  transition-duration: 100ms !important;
+  z-index: 2 !important;
+  user-select: none !important;
+}

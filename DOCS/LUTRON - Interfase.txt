@@ -1,0 +1,284 @@
+﻿Architecture Visuelle LUTRON
+L'interface LUTRON doit être conçue comme une unique surface sombre flottante au centre de l'écran.
+Le fond global de l'application est un gris très sombre.
+Au-dessus de ce fond se trouve un unique conteneur principal occupant environ 95% de la largeur et 90% de la hauteur de l'écran.
+Ce conteneur possède :
+* des angles très arrondis (20 à 30px)
+* une légère ombre
+* une couleur légèrement plus sombre que le fond extérieur
+L'impression recherchée est celle d'une console de supervision moderne et haut de gamme.
+________________
+
+
+Découpage Principal
+L'écran est divisé en deux colonnes.
+Colonne 1 : Navigation
+Largeur :
+15 à 18% de l'écran.
+Cette largeur reste fixe.
+Elle ne doit jamais être redimensionnée selon le contenu.
+Un trait de séparation vertical très discret la sépare du contenu principal.
+________________
+
+
+Colonne 2 : Contenu
+Largeur :
+82 à 85% de l'écran.
+Elle contient toutes les vues métier.
+________________
+
+
+Barre Latérale
+La barre latérale est elle-même divisée en trois zones.
+Zone Supérieure : Utilisateur
+Hauteur :
+100 à 120px
+Contenu :
+Avatar circulaire.
+À droite :
+Nom utilisateur.
+Sous le nom :
+Adresse mail ou rôle.
+Exemple :
+● Luc
+Owner
+
+
+Comme sur l'image, un petit indicateur de présence vert doit être visible.
+Cette zone doit immédiatement permettre d'identifier le compte actif.
+________________
+
+
+Zone Centrale : Navigation
+Occupe environ 75% de la hauteur restante.
+Les catégories sont présentées sous forme de groupes.
+Exemple :
+Gestion Services
+  Liste Services
+  Vue Service
+  Monitoring
+  Statistiques
+  Documentation
+
+
+Gestion Comptes
+  Liste Comptes
+  Vue Compte
+  Accès
+
+
+Administration
+  Modules
+  API
+  Permissions
+
+
+Chaque vue est représentée par une ligne.
+Une ligne active possède :
+* fond légèrement plus clair
+* bordure arrondie
+* icône à gauche
+Exactement comme le bouton "Home" de l'image.
+________________
+
+
+Zone Inférieure
+Toujours collée en bas.
+Même si le contenu principal défile.
+Contient :
+⚙ Paramètres LUTRON
+📖 Documentation LUTRON
+
+
+Comme sur l'image :
+* boutons simples
+* peu mis en avant
+* toujours accessibles
+________________
+
+
+Structure de Chaque Vue
+Toutes les vues LUTRON suivent exactement le même modèle.
+________________
+
+
+Bandeau Supérieur
+Hauteur :
+60 à 80px
+Contient :
+Titre de la vue.
+Exemple :
+Monitoring
+
+
+ou
+Service : API Production
+
+
+À droite :
+Actions principales.
+Exemple :
+Créer
+Modifier
+Ajouter
+Exporter
+
+
+Comme le bouton "Create Link" de l'image.
+________________
+
+
+Zone de Filtres
+Sous le titre.
+Hauteur :
+50 à 60px
+Contient :
+Boutons filtres.
+Champ recherche.
+Sélecteurs.
+Exemple :
+Tous
+Actifs
+En maintenance
+
+
+[ Recherche ]
+
+
+Exactement comme :
+Display
+Settings
+Search
+
+
+sur l'image.
+________________
+
+
+Zone Principale
+C'est ici que se trouve la caractéristique majeure du design.
+L'écran n'est jamais constitué d'une seule table.
+Il est composé de plusieurs cartes indépendantes.
+________________
+
+
+Carte Principale
+Occupe toute la largeur.
+Hauteur importante.
+Bords très arrondis.
+Elle contient les données principales.
+Dans LUTRON cela pourrait être :
+* liste des services
+* liste des alertes
+* liste des vérifications
+Chaque ligne est séparée par un trait discret.
+Comme dans la liste des liens de l'image.
+________________
+
+
+Zone Statistique Inférieure
+Sous la carte principale.
+Deux cartes sont placées côte à côte.
+________________
+
+
+Carte Gauche
+Largeur :
+60%
+Contient :
+Graphique principal.
+Dans LUTRON :
+* disponibilité
+* temps de réponse
+* incidents
+Cette carte est la plus importante visuellement.
+Le graphique doit être large.
+Fond sombre.
+Courbe violette.
+Lignes de grille discrètes.
+Exactement comme dans l'image.
+________________
+
+
+Carte Droite
+Largeur :
+40%
+Contient :
+Statistiques résumées.
+Sous forme de barres horizontales.
+Exemple :
+API Production      ████████████
+Base SQL            █████████
+Frontend            ██████
+
+
+Dans LUTRON cela peut représenter :
+* nombre d'alertes
+* disponibilité
+* temps d'arrêt
+* utilisation API
+Même structure que le panneau droit de l'image.
+________________
+
+
+Vue Service
+Lorsqu'un service est sélectionné, toute l'interface doit conserver exactement cette structure.
+Simplement le contenu change.
+________________
+
+
+Haut
+Informations du service :
+API Production
+
+
+WEB_APP
+PRODUCTION
+UP
+
+
+________________
+
+
+Centre
+Grande carte.
+Liste des ressources.
+HTTPS
+API
+Base de données
+Ping
+SSH
+
+
+________________
+
+
+Bas Gauche
+Graphique historique.
+________________
+
+
+Bas Droite
+Résumé statistique.
+________________
+
+
+Règles Visuelles
+Toutes les cartes utilisent :
+* même rayon d'arrondi
+* même couleur
+* même style de bordure
+Aucune fenêtre modale permanente.
+Aucun menu complexe.
+Aucun sous-menu flottant.
+Toute l'interface doit donner l'impression que l'utilisateur navigue dans un centre de supervision unique, où chaque vue respecte exactement la même structure :
+Titre
+↓
+Filtres
+↓
+Grande Carte Principale
+↓
+Graphique + Résumé Statistique
+
+
+C'est cette répétition systématique du même schéma qui permet de retrouver pratiquement à l'identique l'expérience visuelle de l'image d'inspiration tout en l'adaptant au modèle fonctionnel de LUTRON.

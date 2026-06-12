@@ -1,0 +1,298 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  OWNER
+  USER
+}
+
+enum CheckType {
+  HTTP
+  HTTPS
+  PING
+  SSH
+  LOCAL_COMMAND
+  REMOTE_COMMAND
+}
+
+enum CheckStatus {
+  UP
+  WARNING
+  DOWN
+  MAINTENANCE
+  UNKNOWN
+}
+
+enum AlertStatus {
+  OPEN
+  ACKNOWLEDGED
+  RESOLVED
+}
+
+enum ChannelType {
+  DISCORD
+  TELEGRAM
+}
+
+enum WidgetType {
+  MONITORING_OVERVIEW
+  AVAILABILITY_CHART
+  CONFIG_BUTTON
+  REMOTE_COMMAND
+  LOCAL_COMMAND
+  CONSOLE_OUTPUT
+  LOG_STREAM
+  CUSTOM_NOTE
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String
+  role         UserRole @default(USER)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  serviceUsers ServiceUser[]
+  documents    Document[]
+
+  @@map("users")
+}
+
+model Service {
+  id           String   @id @default(uuid())
+  technicalId  String   @unique @map("technical_id")
+  name         String
+  description  String?
+  tags         String[]
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  states       ServiceState[]
+  roles        Role[]
+  serviceUsers ServiceUser[]
+  resources    Resource[]
+  alerts       Alert[]
+  maintenances Maintenance[]
+  documents    Document[]
+  widgets      ServiceWidget[]
+
+  @@map("services")
+}
+
+model Permission {
+  id          String @id
+  name        String
+  module      String
+  description String
+
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model Role {
+  id        String   @id @default(uuid())
+  serviceId String   @map("service_id")
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  service         Service          @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  rolePermissions RolePermission[]
+  serviceUsers    ServiceUser[]
+
+  @@unique([serviceId, name])
+  @@map("roles")
+}
+
+model RolePermission {
+  roleId       String @map("role_id")
+  permissionId String @map("permission_id")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model ServiceUser {
+  userId    String @map("user_id")
+  serviceId String @map("service_id")
+  roleId    String @map("role_id")
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  role    Role    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, serviceId])
+  @@map("service_users")
+}
+
+model Module {
+  id        String   @id
+  name      String
+  version   String
+  enabled   Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("modules")
+}
+
+model ServiceState {
+  id        String @id @default(uuid())
+  serviceId String @map("service_id")
+  name      String
+  priority  Int    @default(0)
+  color     String @default("#22c55e")
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, name])
+  @@map("service_states")
+}
+
+model Resource {
+  id          String      @id @default(uuid())
+  serviceId   String      @map("service_id")
+  name        String
+  description String?
+  status      CheckStatus @default(UNKNOWN)
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  checks  Check[]
+
+  @@map("resources")
+}
+
+model Check {
+  id         String      @id @default(uuid())
+  resourceId String      @map("resource_id")
+  name       String
+  type       CheckType
+  config     Json        @default("{}")
+  interval   Int         @default(60)
+  timeout    Int         @default(30)
+  status     CheckStatus @default(UNKNOWN)
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @updatedAt @map("updated_at")
+
+  resource Resource      @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  results  CheckResult[]
+
+  @@map("checks")
+}
+
+model CheckResult {
+  id             String      @id @default(uuid())
+  checkId        String      @map("check_id")
+  status         CheckStatus
+  responseTimeMs Int?        @map("response_time_ms")
+  message        String?
+  createdAt      DateTime    @default(now()) @map("created_at")
+
+  check Check @relation(fields: [checkId], references: [id], onDelete: Cascade)
+
+  @@index([checkId, createdAt])
+  @@map("check_results")
+}
+
+model Alert {
+  id        String      @id @default(uuid())
+  serviceId String      @map("service_id")
+  title     String
+  message   String
+  severity  String      @default("WARNING")
+  source    String?
+  metadata  Json        @default("{}")
+  status    AlertStatus @default(OPEN)
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@map("alerts")
+}
+
+model Maintenance {
+  id        String   @id @default(uuid())
+  serviceId String   @map("service_id")
+  startAt   DateTime @map("start_at")
+  endAt     DateTime @map("end_at")
+  reason    String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@map("maintenances")
+}
+
+model Document {
+  id        String   @id @default(uuid())
+  serviceId String   @map("service_id")
+  title     String
+  content   String   @db.Text
+  createdBy String   @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  author  User    @relation(fields: [createdBy], references: [id])
+
+  @@map("documents")
+}
+
+model Channel {
+  id         String      @id @default(uuid())
+  name       String
+  type       ChannelType
+  enabled    Boolean     @default(true)
+  events     String[]    @default(["ALERT_CREATED", "ALERT_RESOLVED"])
+  serviceIds String[]    @default([]) @map("service_ids")
+  config     Json        @default("{}")
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @default(now()) @updatedAt @map("updated_at")
+
+  @@map("channels")
+}
+
+model SupervisionPack {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  category    String   @default("general")
+  widgets     Json     @default("[]")
+  isSystem    Boolean  @default(false) @map("is_system")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("supervision_packs")
+}
+
+model ServiceWidget {
+  id        String     @id @default(uuid())
+  serviceId String     @map("service_id")
+  type      WidgetType
+  title     String
+  config    Json       @default("{}")
+  layoutX   Int        @default(0) @map("layout_x")
+  layoutY   Int        @default(0) @map("layout_y")
+  layoutW   Int        @default(6) @map("layout_w")
+  layoutH   Int        @default(4) @map("layout_h")
+  packId    String?    @map("pack_id")
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@index([serviceId])
+  @@map("service_widgets")
+}

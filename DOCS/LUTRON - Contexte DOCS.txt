@@ -1,0 +1,220 @@
+﻿LUTRON - Contexte Fonctionnel
+Présentation
+LUTRON est une plateforme centrale de supervision et de gestion technique conçue pour être hautement modulaire et extensible.
+L'objectif principal de LUTRON est de centraliser la supervision, l'administration et le suivi opérationnel de projets techniques variés au sein d'une plateforme unique.
+La plateforme n'est pas limitée à la supervision de sites web. Elle doit être capable de superviser tout type de projet ou système :
+* Applications Web
+* APIs
+* Services réseau
+* Machines physiques ou virtuelles
+* Services externes
+* Systèmes de jeux vidéo
+* Outils personnalisés
+* Tout autre système pouvant être intégré via un module
+LUTRON doit être pensé comme une plateforme centrale capable de superviser n'importe quel projet technique.
+________________
+
+
+Principes Fondamentaux
+Architecture Modulaire
+LUTRON repose sur un noyau central (Core) auquel peuvent être ajoutés des modules.
+Le Core doit rester indépendant des modules additionnels.
+Un module peut :
+* Ajouter de nouvelles ressources métier
+* Ajouter de nouvelles permissions
+* Ajouter de nouvelles routes API
+* Ajouter de nouvelles fonctionnalités
+* Ajouter de nouveaux systèmes de supervision
+Le Core ne doit jamais nécessiter de modification pour accueillir un nouveau module.
+________________
+
+
+Concepts Principaux
+Service
+Le Service est l'entité centrale de LUTRON.
+Un service représente un projet technique supervisé par la plateforme.
+Exemples :
+* Site Web
+* Application métier
+* API
+* Infrastructure
+* Système de logs
+* Serveur de jeu
+* Machine
+* Projet collaboratif
+Chaque service possède :
+* Nom
+* Description
+* Liste de tags
+* Paramètres propres aux modules installés
+Exemples de tags :
+* WEB_APP
+* API
+* MACHINE
+* LOW_SYS
+* GAME_SYSTEM
+Un service peut avoir :
+* Plusieurs administrateurs
+* Plusieurs utilisateurs
+* Plusieurs rôles
+* Plusieurs modules actifs
+La création d'un service est réservée au propriétaire de la plateforme.
+________________
+
+
+Gestion des Comptes
+Deux types de comptes existent :
+Owner
+Possède le contrôle total de la plateforme.
+Peut :
+* Créer des services
+* Gérer tous les utilisateurs
+* Attribuer des administrateurs
+* Gérer les modules
+* Gérer les permissions disponibles
+* Accéder à tous les services
+Utilisateur
+Dispose uniquement des droits qui lui sont attribués.
+________________
+
+
+Gestion des Permissions
+LUTRON utilise un système RBAC (Role Based Access Control).
+Les permissions sont identifiées par un identifiant technique unique.
+Exemples :
+* MONITORING_VIEW
+* MONITORING_EDIT
+* DOCUMENT_READ
+* DOCUMENT_WRITE
+* SERVICE_ADMIN
+Les permissions sont définies par le Core ou par les modules.
+Les permissions ne peuvent pas être créées dynamiquement depuis l'interface.
+Toute permission doit exister dans le code du Core ou d'un module.
+Les rôles regroupent plusieurs permissions.
+Exemple :
+Role : Technicien
+* MONITORING_VIEW
+* MONITORING_ACKNOWLEDGE
+* DOCUMENT_READ
+Les rôles sont attribués à des utilisateurs pour un service donné.
+Les permissions sont toujours évaluées au niveau du service.
+________________
+
+
+Modules du Core
+Les modules suivants font partie intégrante du noyau LUTRON.
+Monitoring
+Responsable de la supervision technique.
+Fonctionnalités :
+* Vérifications HTTP
+* Vérifications HTTPS
+* Ping
+* Connexions SSH automatisées
+* Exécution de commandes distantes
+* Exécution de commandes Local
+* Historique des états
+* Temps de réponse
+* Rapports quotidiens
+* Disponibilité mensuelle
+* Gestion des alertes
+* Groupes de vérifications
+Une ressource surveillée peut être composée de plusieurs vérifications.
+Exemple :
+Site Principal
+* HTTPS
+* SSL
+* API
+* Base de données
+L'état global est calculé à partir des vérifications associées.
+Les états disponibles sont configurables et crée par service.
+Exemples :
+* UP
+* WARNING
+* DOWN
+* MAINTENANCE
+* UNKNOWN
+________________
+
+
+Gestion Documentaire
+Permet de centraliser la documentation liée aux services.
+Le module doit être intégré au Core.
+Les permissions d'accès sont gérées par service.
+
+
+
+
+
+
+
+
+________________
+
+
+Gestion des Accès
+Permet de gérer :
+* Utilisateurs
+* Rôles
+* Permissions
+* Administrateurs de service
+Le module est obligatoire.
+________________
+
+
+Maintenance
+Les maintenances correspondent à des périodes planifiées.
+Durant une maintenance :
+* Le monitoring continue de fonctionner
+* Les données continuent d'être collectées
+* Les alertes sont suspendues
+Les maintenances sont associées à un service.
+________________
+
+
+Alertes
+Une alerte est un événement généré automatiquement.
+Une alerte n'ouvre jamais automatiquement un incident.
+Les alertes appartiennent à un service.
+Canaux supportés :
+* Discord (via bot)
+* Telegram (via bot)
+Les Canaux doive être enregistré de manière à pouvoir les réutiliser facilement sur un autre service/
+Les informations de contact sont configurées dans les paramètres du service.
+
+
+
+
+________________
+
+
+Historique et Conservation
+Chaque service possède sa propre politique de rétention.
+Les administrateurs du service peuvent définir :
+* Durée de conservation
+* Archivage
+* Suppression automatique
+Le système doit être capable de calculer :
+* Disponibilité mensuelle
+* Historique des indisponibilités (UP/DOWN)
+* Temps d'arrêt cumulés
+________________
+
+
+API
+LUTRON expose une API permettant l'intégration avec des systèmes externes.
+L'API permet notamment :
+* Lire les états de supervision
+* Consulter les statistiques
+* Récupérer les historiques
+* Gérer certaines ressources selon les permissions accordées
+L'authentification API repose sur les comptes existants de la plateforme.
+Aucun système distinct de comptes API n'est nécessaire.
+Les permissions API doivent respecter exactement les mêmes règles RBAC que l'interface principale.
+________________
+
+
+Vision Long Terme
+LUTRON n'est pas uniquement un outil de monitoring.
+LUTRON est une plateforme centrale de supervision capable d'héberger plusieurs domaines fonctionnels autour d'un même service.
+Le monitoring constitue l'une des fonctionnalités principales mais la plateforme doit pouvoir évoluer grâce à des modules indépendants sans remise en cause du Core.
+Le Service reste l'entité centrale sur laquelle s'appliquent toutes les fonctionnalités, permissions, ressources et modules.
